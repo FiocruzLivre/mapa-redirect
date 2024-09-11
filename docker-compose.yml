@@ -1,0 +1,25 @@
+networks:
+  reverse-proxy:
+    external: true
+    name: reverse-proxy
+
+services:
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - reverse-proxy
+    environment:
+      - DEFAULT_HOST=www.mapamovsaude.net.br,movimentossociaisemsaude.net.br
+      - VIRTUAL_HOST=www.mapamovsaude.net.br,movimentossociaisemsaude.net.br
+      - LETSENCRYPT_HOST=www.mapamovsaude.net.br,movimentossociaisemsaude.net.br
+      - LETSENCRYPT_EMAIL=adm@librecode.coop
+  php:
+    image: php:8.3-fpm-alpine
+    restart: unless-stopped
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - reverse-proxy
